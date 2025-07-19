@@ -1,0 +1,230 @@
+basePath: /api/v1
+definitions:
+  json_models.CreateSubscription:
+    description: Subscription information
+    properties:
+      end_date:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      user_id:
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  json_models.PutSubscription:
+    description: Subscription information
+    properties:
+      end_date:
+        type: string
+      price:
+        type: integer
+      service_name:
+        type: string
+      start_date:
+        type: string
+      subscription_id:
+        type: string
+    required:
+    - service_name
+    type: object
+  sql_models.Subscription:
+    description: Subscription information
+    properties:
+      createdAt:
+        type: string
+      endDate:
+        type: string
+      id:
+        type: string
+      price:
+        type: integer
+      serviceName:
+        type: string
+      startDate:
+        type: string
+      userID:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления подписками
+  title: Subscription API
+  version: "1.0"
+paths:
+  /subscriptions/calculate-cost:
+    get:
+      description: Calculates total cost of subscriptions for given period with optional
+        filters
+      parameters:
+      - description: User ID filter
+        in: query
+        name: user-id
+        type: string
+      - description: Service name filter
+        in: query
+        name: service-name
+        type: string
+      - description: 'Start date (format: 01-2006)'
+        in: query
+        name: start-date
+        required: true
+        type: string
+      - description: 'End date (format: 01-2006)'
+        in: query
+        name: end-date
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Invalid query parameters
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Calculate subscriptions cost
+      tags:
+      - Subscriptions
+  /subscriptions/create-subscription:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new subscription for user
+      parameters:
+      - description: Subscription data
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/json_models.CreateSubscription'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Failed to decode JSON request
+          schema:
+            type: string
+        "422":
+          description: Validation error
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Create subscription
+      tags:
+      - Subscriptions
+  /subscriptions/delete-subscription:
+    delete:
+      description: Deletes specified subscription
+      parameters:
+      - description: Subscription ID
+        in: query
+        name: subscription-id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "404":
+          description: Subscription not found
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Delete subscription
+      tags:
+      - Subscriptions
+  /subscriptions/get-subscription:
+    get:
+      description: Returns all subscriptions for specified user
+      parameters:
+      - description: User ID
+        in: query
+        name: user-id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of subscriptions
+          schema:
+            items:
+              $ref: '#/definitions/sql_models.Subscription'
+            type: array
+        "400":
+          description: Invalid UUID format
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get subscriptions
+      tags:
+      - Subscriptions
+  /subscriptions/update-subscription:
+    put:
+      consumes:
+      - application/json
+      description: Updates existing subscription data
+      parameters:
+      - description: Update data
+        in: body
+        name: subscription
+        required: true
+        schema:
+          $ref: '#/definitions/json_models.PutSubscription'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Invalid request format
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Update subscription
+      tags:
+      - Subscriptions
+swagger: "2.0"

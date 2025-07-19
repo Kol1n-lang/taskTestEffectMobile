@@ -1,0 +1,345 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API для управления подписками",
+        "title": "Subscription API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/subscriptions/calculate-cost": {
+            "get": {
+                "description": "Calculates total cost of subscriptions for given period with optional filters",
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Calculate subscriptions cost",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID filter",
+                        "name": "user-id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Service name filter",
+                        "name": "service-name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date (format: 01-2006)",
+                        "name": "start-date",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date (format: 01-2006)",
+                        "name": "end-date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid query parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/subscriptions/create-subscription": {
+            "post": {
+                "description": "Creates a new subscription for user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Create subscription",
+                "parameters": [
+                    {
+                        "description": "Subscription data",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/json_models.CreateSubscription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Failed to decode JSON request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/subscriptions/delete-subscription": {
+            "delete": {
+                "description": "Deletes specified subscription",
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Delete subscription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Subscription ID",
+                        "name": "subscription-id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid parameters",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Subscription not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/subscriptions/get-subscription": {
+            "get": {
+                "description": "Returns all subscriptions for specified user",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Get subscriptions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "user-id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of subscriptions",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/sql_models.Subscription"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid UUID format",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/subscriptions/update-subscription": {
+            "put": {
+                "description": "Updates existing subscription data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Subscriptions"
+                ],
+                "summary": "Update subscription",
+                "parameters": [
+                    {
+                        "description": "Update data",
+                        "name": "subscription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/json_models.PutSubscription"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid request format",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "json_models.CreateSubscription": {
+            "description": "Subscription information",
+            "type": "object",
+            "required": [
+                "price",
+                "service_name",
+                "start_date",
+                "user_id"
+            ],
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "json_models.PutSubscription": {
+            "description": "Subscription information",
+            "type": "object",
+            "required": [
+                "service_name"
+            ],
+            "properties": {
+                "end_date": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "service_name": {
+                    "type": "string"
+                },
+                "start_date": {
+                    "type": "string"
+                },
+                "subscription_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "sql_models.Subscription": {
+            "description": "Subscription information",
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "serviceName": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
