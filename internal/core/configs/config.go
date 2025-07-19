@@ -36,8 +36,8 @@ func Init() *Configs {
 		Host:     getEnv("DB_HOST", "localhost"),
 		Port:     getEnv("DB_PORT", "5432"),
 		Username: getEnv("DB_USER", "postgres"),
-		Password: getEnv("DB_PASSWORD", "your_password"),
-		Database: getEnv("DB_NAME", "your_database"),
+		Password: getEnv("DB_PASSWORD", "1234"),
+		Database: getEnv("DB_NAME", "Subscription"),
 	}
 
 	config.Redis = RedisConfig{
